@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DATA Rakshak</string>
+    <string name="check_permissions">Check App Permissions</string>
+    <string name="welcome_text">Welcome to DATA Rakshak</string>
+    <string name="app_description">Your privacy guardian that helps you manage and secure your app permissions</string>
+    <string name="permission_score_title">Permission Score</string>
+    <string name="overall_privacy_score">Overall Privacy Score</string>
+    <string name="high_risk">High Risk</string>
+    <string name="medium_risk">Medium Risk</string>
+    <string name="low_risk">Low Risk</string>
+</resources> 
