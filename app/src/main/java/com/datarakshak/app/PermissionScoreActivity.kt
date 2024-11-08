@@ -1,6 +1,7 @@
 package com.datarakshak.app
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,12 @@ import com.permissionx.guolindev.PermissionX
 class PermissionScoreActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPermissionScoreBinding
     private lateinit var permissionAdapter: PermissionAdapter
+    private val permissions = listOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +26,6 @@ class PermissionScoreActivity : AppCompatActivity() {
 
         setupRecyclerView()
         checkPermissions()
-        calculatePrivacyScore()
     }
 
     private fun setupRecyclerView() {
@@ -31,13 +37,6 @@ class PermissionScoreActivity : AppCompatActivity() {
     }
 
     private fun checkPermissions() {
-        val permissions = listOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-
         PermissionX.init(this)
             .permissions(permissions)
             .onExplainRequestReason { scope, deniedList ->
@@ -49,28 +48,45 @@ class PermissionScoreActivity : AppCompatActivity() {
                 )
             }
             .request { allGranted, grantedList, deniedList ->
-                if (allGranted) {
-                    Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
-                    updatePermissionList(grantedList)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "These permissions are denied: $deniedList",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                updatePermissionList()
+                calculatePrivacyScore()
             }
     }
 
     private fun calculatePrivacyScore() {
-        // Simple scoring logic (can be enhanced based on requirements)
-        val score = 75 // Example score
-        binding.scoreProgressBar.progress = score
-        binding.overallScoreText.text = "Overall Privacy Score: $score%"
+        var totalScore = 100
+        var grantedHighRisk = 0
+        var grantedMediumRisk = 0
+
+        permissions.forEach { permission ->
+            when {
+                checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED -> {
+                    when (getRiskLevel(permission)) {
+                        RiskLevel.HIGH -> {
+                            totalScore -= 15
+                            grantedHighRisk++
+                        }
+                        RiskLevel.MEDIUM -> {
+                            totalScore -= 10
+                            grantedMediumRisk++
+                        }
+                        RiskLevel.LOW -> totalScore -= 5
+                    }
+                }
+            }
+        }
+
+        binding.scoreProgressBar.progress = totalScore.coerceIn(0, 100)
+        binding.overallScoreText.text = buildString {
+            append("Overall Privacy Score: $totalScore%\n")
+            if (grantedHighRisk > 0) {
+                append("Warning: $grantedHighRisk high-risk permissions granted")
+            }
+        }
     }
 
-    private fun updatePermissionList(grantedPermissions: List<String>) {
-        val permissionItems = grantedPermissions.map { permission ->
+    private fun updatePermissionList() {
+        val permissionItems = permissions.map { permission ->
             PermissionItem(
                 name = getPermissionName(permission),
                 description = getPermissionDescription(permission),
@@ -92,10 +108,10 @@ class PermissionScoreActivity : AppCompatActivity() {
 
     private fun getPermissionDescription(permission: String): String {
         return when (permission) {
-            Manifest.permission.CAMERA -> "Access to device camera"
-            Manifest.permission.ACCESS_FINE_LOCATION -> "Precise location access"
-            Manifest.permission.READ_CONTACTS -> "Access to contacts"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "Access to files and media"
+            Manifest.permission.CAMERA -> "Access to take photos and record videos"
+            Manifest.permission.ACCESS_FINE_LOCATION -> "Access to precise location (GPS and network-based)"
+            Manifest.permission.READ_CONTACTS -> "Access to view your contacts"
+            Manifest.permission.READ_EXTERNAL_STORAGE -> "Access to photos, media, and files"
             else -> "Unknown permission description"
         }
     }
@@ -103,7 +119,8 @@ class PermissionScoreActivity : AppCompatActivity() {
     private fun getRiskLevel(permission: String): RiskLevel {
         return when (permission) {
             Manifest.permission.ACCESS_FINE_LOCATION -> RiskLevel.HIGH
-            Manifest.permission.READ_CONTACTS -> RiskLevel.MEDIUM
+            Manifest.permission.READ_CONTACTS -> RiskLevel.HIGH
+            Manifest.permission.CAMERA -> RiskLevel.MEDIUM
             else -> RiskLevel.LOW
         }
     }

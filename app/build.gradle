@@ -16,6 +16,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -44,4 +50,29 @@ dependencies {
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+
+tasks.register('copyDebugApk') {
+    doLast {
+        def sourceFile = layout.buildDirectory.file('outputs/apk/debug/app-debug.apk')
+        def destinationDir = layout.projectDirectory.dir('debug_apk')
+        
+        copy {
+            from sourceFile
+            into destinationDir
+        }
+        
+        println "Debug APK copied to: ${destinationDir.get()}/app-debug.apk"
+    }
+}
+
+tasks.named('assembleDebug') {
+    finalizedBy('copyDebugApk')
 } 

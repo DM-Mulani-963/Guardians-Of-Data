@@ -11,4 +11,10 @@
     <string name="low_risk">Low Risk</string>
     <string name="permission_icon">Permission Icon</string>
     <string name="risk_level_icon">Risk Level Icon</string>
+    <string name="channel_name">Privacy Alerts</string>
+    <string name="channel_description">Notifications about privacy concerns</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="cancel">Cancel</string>
 </resources> 
