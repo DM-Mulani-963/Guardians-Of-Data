@@ -14,9 +14,6 @@ DATA Rakshak is an Android application focused on enhancing user privacy. It pro
   - Metadata Cleaning on File Sharing
   - User Privacy Tips and Management
 - [x] Assign roles for team members:
-  - **Dhruvkumar Mulani** - UI/UX and Frontend Development
-  - **Parin Solanki** - Backend Development and Data Analysis
-  - **Shyam Chopda** - Security Features and Metadata Cleaning
 - [x] Research non-root implementation options for Android
 
 ### Phase 2: Setup & Design
