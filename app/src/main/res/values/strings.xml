@@ -9,4 +9,6 @@
     <string name="high_risk">High Risk</string>
     <string name="medium_risk">Medium Risk</string>
     <string name="low_risk">Low Risk</string>
+    <string name="permission_icon">Permission Icon</string>
+    <string name="risk_level_icon">Risk Level Icon</string>
 </resources> 
