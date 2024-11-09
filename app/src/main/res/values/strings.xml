@@ -11,4 +11,6 @@
     <string name="high_risk_notification_text">An app with %1$d permissions poses significant privacy risk</string>
     <string name="notification_channel_name">High Risk Apps</string>
     <string name="notification_channel_description">Notifications for high-risk apps</string>
+    <string name="search_apps">Search installed apps</string>
+    <string name="tips_and_alerts">Tips &amp; Alerts</string>
 </resources> 
