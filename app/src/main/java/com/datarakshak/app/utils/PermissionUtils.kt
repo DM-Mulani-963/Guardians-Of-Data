@@ -1,49 +1,39 @@
 package com.datarakshak.app.utils
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-import com.datarakshak.app.RiskLevel
+import com.datarakshak.app.model.RiskLevel
+import com.datarakshak.app.R
 
 object PermissionUtils {
-    fun isPermissionGranted(context: Context, permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    fun getGrantedPermissionsCount(context: Context, permissions: List<String>): Int {
-        return permissions.count { isPermissionGranted(context, it) }
-    }
-
-    fun getPermissionName(permission: String): String {
-        return when (permission) {
-            Manifest.permission.CAMERA -> "Camera"
-            Manifest.permission.ACCESS_FINE_LOCATION -> "Location"
-            Manifest.permission.READ_CONTACTS -> "Contacts"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "Storage"
-            else -> "Unknown Permission"
+    fun getPermissionRiskIcon(riskLevel: RiskLevel): Int {
+        return when (riskLevel) {
+            RiskLevel.HIGH -> R.drawable.ic_high_risk
+            RiskLevel.MEDIUM -> R.drawable.ic_medium_risk
+            RiskLevel.LOW -> R.drawable.ic_low_risk
         }
     }
 
-    fun getPermissionDescription(permission: String): String {
-        return when (permission) {
-            Manifest.permission.CAMERA -> "Access to take photos and record videos"
-            Manifest.permission.ACCESS_FINE_LOCATION -> "Access to precise location (GPS and network-based)"
-            Manifest.permission.READ_CONTACTS -> "Access to view your contacts"
-            Manifest.permission.READ_EXTERNAL_STORAGE -> "Access to photos, media, and files"
-            else -> "Unknown permission description"
+    fun scanInstalledApps(context: Context): List<Triple<String, String, RiskLevel>> {
+        val permissions = mutableListOf<Triple<String, String, RiskLevel>>()
+        try {
+            val pm = context.packageManager
+            val installedApps = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+            
+            for (packageInfo in installedApps) {
+                val requestedPermissions = packageInfo.requestedPermissions
+                if (requestedPermissions != null) {
+                    for (permission in requestedPermissions) {
+                        val riskLevel = RiskLevel.fromPermission(permission)
+                        val permissionInfo = pm.getPermissionInfo(permission, 0)
+                        val permissionName = permissionInfo.loadLabel(pm).toString()
+                        permissions.add(Triple(permissionName, permission, riskLevel))
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-    }
-
-    fun getRiskLevel(permission: String): RiskLevel {
-        return when (permission) {
-            Manifest.permission.ACCESS_FINE_LOCATION -> RiskLevel.HIGH
-            Manifest.permission.READ_CONTACTS -> RiskLevel.HIGH
-            Manifest.permission.CAMERA -> RiskLevel.MEDIUM
-            else -> RiskLevel.LOW
-        }
+        return permissions.distinctBy { it.second }
     }
 } 

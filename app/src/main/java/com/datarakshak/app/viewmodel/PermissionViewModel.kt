@@ -1,45 +1,31 @@
 package com.datarakshak.app.viewmodel
 
 import android.app.Application
-import android.content.pm.PackageManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.datarakshak.app.PermissionItem
-import com.datarakshak.app.RiskLevel
+import com.datarakshak.app.model.RiskLevel
 import com.datarakshak.app.utils.PermissionUtils
 
 class PermissionViewModel(application: Application) : AndroidViewModel(application) {
-    private val _permissionItems = MutableLiveData<List<PermissionItem>>()
-    val permissionItems: LiveData<List<PermissionItem>> = _permissionItems
+    private val _permissions = MutableLiveData<List<PermissionItem>>()
+    val permissions: LiveData<List<PermissionItem>> = _permissions
 
-    private val _privacyScore = MutableLiveData<Int>()
-    val privacyScore: LiveData<Int> = _privacyScore
-
-    fun updatePermissions(permissions: List<String>) {
-        val items = permissions.map { permission ->
+    fun scanPermissions() {
+        val scannedPermissions = PermissionUtils.scanInstalledApps(getApplication())
+        val permissionItems = scannedPermissions.map { (name, _, riskLevel) ->
             PermissionItem(
-                name = PermissionUtils.getPermissionName(permission),
-                description = PermissionUtils.getPermissionDescription(permission),
-                riskLevel = PermissionUtils.getRiskLevel(permission)
+                name = name,
+                riskLevel = riskLevel.displayName,
+                riskIcon = PermissionUtils.getPermissionRiskIcon(riskLevel)
             )
-        }
-        _permissionItems.value = items
-        calculatePrivacyScore(permissions)
-    }
-
-    private fun calculatePrivacyScore(permissions: List<String>) {
-        var score = 100
-        permissions.forEach { permission ->
-            if (getApplication<Application>().checkSelfPermission(permission) == 
-                PackageManager.PERMISSION_GRANTED) {
-                score -= when (PermissionUtils.getRiskLevel(permission)) {
-                    RiskLevel.HIGH -> 15
-                    RiskLevel.MEDIUM -> 10
-                    RiskLevel.LOW -> 5
-                }
+        }.sortedBy { 
+            when (RiskLevel.valueOf(it.riskLevel.replace(" Risk", "").uppercase())) {
+                RiskLevel.HIGH -> 0
+                RiskLevel.MEDIUM -> 1
+                RiskLevel.LOW -> 2
             }
         }
-        _privacyScore.value = score.coerceIn(0, 100)
+        _permissions.value = permissionItems
     }
 } 
