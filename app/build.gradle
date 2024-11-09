@@ -59,7 +59,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
+// Define copyDebugApk task
 tasks.register('copyDebugApk') {
+    dependsOn 'assembleDebug'  // Make sure assembleDebug runs first
+    
     doLast {
         def sourceFile = layout.buildDirectory.file('outputs/apk/debug/app-debug.apk')
         def destinationDir = layout.projectDirectory.dir('debug_apk')
