@@ -6,12 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.datarakshak.app.databinding.ItemPermissionBinding
-
-data class PermissionItem(
-    val name: String,
-    val riskLevel: String,
-    val riskIcon: Int
-)
+import com.datarakshak.app.model.PermissionItem
 
 class PermissionAdapter : ListAdapter<PermissionItem, PermissionAdapter.PermissionViewHolder>(PermissionDiffCallback()) {
 

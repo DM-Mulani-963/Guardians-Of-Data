@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.datarakshak.app.model.PermissionItem
 import com.datarakshak.app.model.RiskLevel
 import com.datarakshak.app.utils.PermissionUtils
 
