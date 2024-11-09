@@ -13,7 +13,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.checkPermissionsButton.setOnClickListener {
+        setupUI()
+    }
+
+    private fun setupUI() {
+        binding.btnCheckPermissions.setOnClickListener {
             startActivity(Intent(this, PermissionScoreActivity::class.java))
         }
     }
