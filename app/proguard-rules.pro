@@ -8,4 +8,8 @@
 -keepclassmembers enum * {
     public static **[] values();
     public static ** valueOf(java.lang.String);
-} 
+}
+
+# Add project specific ProGuard rules here.
+-keepattributes SourceFile,LineNumberTable
+-keep class com.datarakshak.app.** { *; } 

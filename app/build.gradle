@@ -59,23 +59,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-// Define copyDebugApk task
-tasks.register('copyDebugApk') {
-    dependsOn 'assembleDebug'  // Make sure assembleDebug runs first
-    
-    doLast {
-        def sourceFile = layout.buildDirectory.file('outputs/apk/debug/app-debug.apk')
-        def destinationDir = layout.projectDirectory.dir('debug_apk')
-        
-        copy {
-            from sourceFile
-            into destinationDir
+// Correct way to define the copyDebugApk task
+android.applicationVariants.all { variant ->
+    if (variant.name == "debug") {
+        tasks.register("copyDebugApk", Copy) {
+            from variant.outputs[0].outputFile
+            into layout.projectDirectory.dir("debug_apk")
+            dependsOn variant.assembleProvider
         }
-        
-        println "Debug APK copied to: ${destinationDir.get()}/app-debug.apk"
     }
-}
-
-tasks.named('assembleDebug') {
-    finalizedBy('copyDebugApk')
 } 
