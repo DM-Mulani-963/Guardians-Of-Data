@@ -7,4 +7,8 @@
     <string name="settings">Settings</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="high_risk_notification_title">⚠️ High Risk App Detected!</string>
+    <string name="high_risk_notification_text">An app with %1$d permissions poses significant privacy risk</string>
+    <string name="notification_channel_name">High Risk Apps</string>
+    <string name="notification_channel_description">Notifications for high-risk apps</string>
 </resources> 

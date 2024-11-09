@@ -1,20 +1,31 @@
 package com.datarakshak.app
 
 import android.app.Application
-import androidx.work.Configuration
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 
-class App : Application(), Configuration.Provider {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Initialize WorkManager is handled by the Configuration.Provider implementation
+        createNotificationChannels()
     }
 
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setMinimumLoggingLevel(android.util.Log.INFO)
-            .build()
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "new_app_install_channel",
+                "New App Installations",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications for newly installed apps"
+                enableLights(true)
+                enableVibration(true)
+            }
 
-    companion object {
-        const val TAG = "DATARakshak"
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 } 

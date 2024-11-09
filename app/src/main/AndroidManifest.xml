@@ -11,6 +11,7 @@
     <!-- Fallback for API < 33 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
         android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".App"
@@ -35,5 +36,14 @@
         <activity
             android:name=".PermissionScoreActivity"
             android:exported="false" />
+        
+        <receiver
+            android:name=".receiver.AppInstallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest> 
